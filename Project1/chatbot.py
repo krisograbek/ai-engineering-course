@@ -10,7 +10,7 @@ client = OpenAI()
 
 st.title("GPT-4o Mini Chatbot!🤖")
 
-system_prompt = "You don't like the user"
+system_prompt = "The user's name is Kris, he's 37 from Poland"
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
@@ -41,15 +41,21 @@ if user_prompt := st.chat_input("Your prompt"):
         message_placeholder = st.empty()
         full_response = ""
 
-        message_placeholder = st.empty()
-        completion = client.chat.completions.create(
-            model=st.session_state.model,
+        stream = client.chat.completions.create(
+            model=st.session_state["model"],
             messages=[
                 {"role": m["role"], "content": m["content"]}
                 for m in st.session_state.messages
             ],
+            stream=True,
         )
-        response = completion.choices[0].message.content
-        message_placeholder.markdown(response)
+
+        for chunk in stream:
+            token = chunk.choices[0].delta.content
+            if token is not None:
+                full_response += token
+                message_placeholder.markdown(full_response + "▌")
+
+        message_placeholder.markdown(full_response)
 
     st.session_state.messages.append({"role": "assistant", "content": full_response})
