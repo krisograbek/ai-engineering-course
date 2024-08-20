@@ -40,20 +40,18 @@ st.sidebar.markdown(
 st.title("GPT-4o Mini Chatbot!🤖")
 
 
-initial_system_prompt = "The user's name is Kris, he's 37 from Poland"
+# Initialize the system prompt if it's not already set
+if "system_prompt" not in st.session_state:
+    st.session_state.system_prompt = "The user's name is Kris, he's 37 from Poland"
 
 # Check if the messages exist in session_state, if not, initialize them
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "system",
-            "content": initial_system_prompt,
+            "content": st.session_state.system_prompt,
         }
     ]
-
-# Ensure the system prompt key exists in session_state
-if "system_prompt" not in st.session_state:
-    st.session_state["system_prompt"] = initial_system_prompt
 
 
 def system_prompt_callback():
@@ -63,7 +61,6 @@ def system_prompt_callback():
 
 st.sidebar.text_input(
     "System Prompt",
-    value=st.session_state["system_prompt"],
     on_change=system_prompt_callback,
     key="system_prompt",
 )
