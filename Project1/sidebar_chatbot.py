@@ -5,19 +5,22 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+# I'll work with it at the very end, because it's bad for development now
+# openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
+
+
 client = OpenAI()
-
-
 # Sidebar
 st.sidebar.title("Configuration")
+
+if "model" not in st.session_state:
+    st.session_state["model"] = "gpt-4o-mini"
 
 
 def model_callback():
     st.session_state["model"] = st.session_state["model_selected"]
 
-
-if "model" not in st.session_state:
-    st.session_state["model"] = "gpt-4o-mini"
 
 st.session_state.model = st.sidebar.radio(
     "Select OpenAI Model",
@@ -36,15 +39,39 @@ st.sidebar.markdown(
 
 st.title("GPT-4o Mini Chatbot!🤖")
 
-system_prompt = "The user's name is Kris, he's 37 from Poland"
 
+initial_system_prompt = "The user's name is Kris, he's 37 from Poland"
+
+# Check if the messages exist in session_state, if not, initialize them
 if "messages" not in st.session_state:
     st.session_state.messages = [
         {
             "role": "system",
-            "content": system_prompt,
+            "content": initial_system_prompt,
         }
     ]
+
+# Ensure the system prompt key exists in session_state
+if "system_prompt" not in st.session_state:
+    st.session_state["system_prompt"] = initial_system_prompt
+
+
+def system_prompt_callback():
+    # Update the system prompt in messages based on the current input
+    st.session_state.messages[0]["content"] = st.session_state["system_prompt"]
+
+
+st.sidebar.text_input(
+    "System Prompt",
+    value=st.session_state["system_prompt"],
+    on_change=system_prompt_callback,
+    key="system_prompt",
+)
+
+# For debugging (when needed)
+# st.sidebar.write(st.session_state.messages)
+
+# Main App
 
 
 for message in st.session_state["messages"]:
