@@ -42,7 +42,7 @@ st.title("GPT-4o Mini Chatbot!🤖")
 
 # Initialize the system prompt if it's not already set
 if "system_prompt" not in st.session_state:
-    st.session_state.system_prompt = "The user's name is Kris, he's 37 from Poland"
+    st.session_state.system_prompt = "You are a helpful assistant"
 
 # Check if the messages exist in session_state, if not, initialize them
 if "messages" not in st.session_state:
@@ -65,8 +65,21 @@ st.sidebar.text_input(
     key="system_prompt",
 )
 
+# Initialize the temperature if it's not already set
+if "temperature" not in st.session_state:
+    st.session_state.temperature = 0.0  # default temperature value
+
+
+st.sidebar.number_input(
+    "Temperature",
+    min_value=0.0,
+    max_value=1.0,
+    step=0.1,
+    key="temperature",
+)
+
 # For debugging (when needed)
-# st.sidebar.write(st.session_state.messages)
+# st.sidebar.write(st.session_state.temperature)
 
 # Main App
 
@@ -98,6 +111,7 @@ if user_prompt := st.chat_input("Your prompt"):
                 for m in st.session_state.messages
             ],
             stream=True,
+            temperature=st.session_state.temperature,
         )
 
         for chunk in stream:
