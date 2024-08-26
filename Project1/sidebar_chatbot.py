@@ -1,12 +1,6 @@
 import streamlit as st
 from openai import OpenAI
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
-
-# I'll work with it at the very end, because it's bad for development now
 openai_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
 
